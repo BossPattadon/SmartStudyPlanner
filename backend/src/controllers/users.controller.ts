@@ -24,5 +24,14 @@ export const usersController = {
         }
         const user = await usersService.create({ email, name });
         res.status(201).json(user);
-    }
-}
+    },
+
+    async me(req: Request, res: Response) {
+        if (!req.userId) {
+            res.status(401).json({ error: 'not authenticated' });
+            return;
+        }
+        const user = await usersService.getById(req.userId);
+        res.json(user);
+    },
+};
