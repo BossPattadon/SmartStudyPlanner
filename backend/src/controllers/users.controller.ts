@@ -1,4 +1,4 @@
-import { Request, response, Response } from 'express';
+import { Request, Response } from 'express';
 import { usersService } from '../services/users.service';
 
 export const usersController = {
@@ -14,16 +14,6 @@ export const usersController = {
             return;
         }
         res.json(user);
-    },
-
-    async create(req: Request, res: Response) {
-        const { email, name } = req.body;
-        if (!email || !name) {
-            res.status(400).json({ error : 'email and name are required' });
-            return;
-        }
-        const user = await usersService.create({ email, name });
-        res.status(201).json(user);
     },
 
     async me(req: Request, res: Response) {
