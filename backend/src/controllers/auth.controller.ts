@@ -16,23 +16,38 @@ export const authController = {
             return;
         }
         const result = await authService.register(email, password, name);
-        res.status(201).json(result);
+        res.cookie('auth_token', result.token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+        res.status(201).json({ user: result.user });
     },
 
     async login(
         req: Request<{}, {}, { email: string; password: string; }>,
         res: Response,
     ) {
-        const { email, password } = req.body;
-        if ( !email || !password) {
-            res.status(400).json({ error: 'email and password are required' });
+        const result = await authService.login(req.body.email, req.body.password);
+        if (!result) {
+            res.status(401).json({ error: 'invalid credentials' });
             return;
         }
-        const result = await authService.login(email, password);
-        if (!result) {
-            res.status(400).json({ error : 'Invalid credentials' });
-            return;
-        };
-        res.json(result);
-    }
+        res.cookie('auth_token', result.token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
+        res.json({ user: result.user })
+    },
+
+    async logout(
+        req: Request,
+        res: Response,
+    ) {
+        res.clearCookie('auth_token');
+        res.json({ ok: true });
+    },
 }

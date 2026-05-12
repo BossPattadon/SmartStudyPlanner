@@ -21,19 +21,17 @@ export function requireAuth( req: Request, res: Response, next: NextFunction ) {
         return;
     }
 
-    const header = req.headers.authorization;
-    if (!header || !header.startsWith('Bearer ')) {
-        res.status(401).json({ error : 'missing or invalid Authorization header' });
+    const token = req.cookies?.auth_token;
+    if (!token) {
+        res.status(401).json({ error: 'not authenticated' });
         return;
     }
-
-    const token = header.slice('Bearer '.length);
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET) as JWTPayload;
         req.userId = decoded.sub;
         next();
     } catch {
-        res.status(401).json({ error : 'Invalid or expired token' });
+        res.status(401).json({ error : 'invalid or expired token' });
     }
 };
