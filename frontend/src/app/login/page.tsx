@@ -21,12 +21,6 @@ import {
     EyeOffIcon,
 } from "lucide-react"
 
-type User = {
-    id: string,
-    email: string,
-    name: string,
-};
-
 export default function LoginPage() {
     const router = useRouter();
     const [email, setEmail] = useState('');
@@ -40,7 +34,7 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            await api<{ user: User }>('/auth/login', {
+            await api<User>('/auth/login', {
                 method: 'POST',
                 body: { email, password },
             });

@@ -20,12 +20,6 @@ import {
 } from "lucide-react"
 import Link from "next/link";
 
-type User = {
-    id: string,
-    email: string,
-    name: string,
-};
-
 export default function RegisterPage() {
     const router = useRouter();
     const [name, setName] = useState('');
