@@ -1,9 +1,7 @@
 'use client'
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { api } from '@/lib/api'
+import { api } from "@/lib/api";
 import {
     InputGroup,
     InputGroupAddon,
@@ -20,6 +18,7 @@ import {
     StarIcon,
     EyeOffIcon,
 } from "lucide-react"
+import Link from "next/link";
 
 type User = {
     id: string,
@@ -27,39 +26,48 @@ type User = {
     name: string,
 };
 
-export default function LoginPage() {
+export default function RegisterPage() {
     const router = useRouter();
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
-    async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>){
+    async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
         e.preventDefault();
         setError(null);
         setLoading(true);
 
         try {
-            await api<{ user: User }>('/auth/login', {
+            await api<User>('/auth/register',{
                 method: 'POST',
-                body: { email, password },
+                body: {email, password, name},
             });
-            router.push("/register");
         } catch(err) {
-            setError(err instanceof Error ? err.message : 'Login Failed');
+            setError(err instanceof Error ? err.message : 'Register Failed')
         } finally {
             setLoading(false);
-        };
-    };
+        }
+    }
 
     return (
-        <main className="flex flex-1 items-center justify-center p-6">
+        <main className="flex flex-1 justify-center items-center">
             <form 
                 onSubmit={handleSubmit}
-                className="w-full max-w-sm space-y-4 rounded-lg border border-gray-200 p-6"
+                className="w-full max-w-sm rounded-lg border border-gray-200 space-y-4 p-6"
             >
-                <h1 className="text-center text-2xl font-bold">Login</h1>
-
+                <h1 className="text-center text-2xl font-bold">Sign Up</h1>
+    
+                <InputGroup className="h-auto">
+                    <InputGroupInput
+                        id="block-start-input"
+                        placeholder="Enter your name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                    />
+                </InputGroup>
                 <InputGroup>
                     <InputGroupInput
                         type="email" 
@@ -97,14 +105,13 @@ export default function LoginPage() {
                         {loading ? 'Signing up' : 'Sign up'}
                     </Button>
                 </div>
-
                 <p className="text-center text-sm">
-                    No account?{' '}
-                    <Link href="/register" className="text-blue-600 hover:underline">
-                        Register
+                    Already have account?{' '}
+                    <Link href="/login" className="text-blue-600 hover:underline">
+                        Login
                     </Link>
                 </p>
             </form>
         </main>
-    );
+    )
 }
